@@ -6,8 +6,11 @@ correo electrónico, permitiendo la gestión de usuarios, mensajes, carpetas, fi
 un entorno de email.
 
 
-### Technologies
+### Tecnologias
   ![Python](https://img.shields.io/badge/-Python-333333?style=flat&logo=python)
+
+### Diagrama
   
 <img width="876" height="1062" alt="Image" src="https://github.com/user-attachments/assets/a4d6a6c8-3f27-4704-bc45-92792fc8cdd3" />
+
 
