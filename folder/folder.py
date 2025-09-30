@@ -12,5 +12,5 @@ class Folder:
     def add_message(self, message):
         self.__messages.append(message)
 
-    def list_messages(self):
+    def get_messages(self):
         return [msg.subjet for msg in self.__messages]
