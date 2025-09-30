@@ -13,9 +13,9 @@ class User:
     @property
     def email(self) -> str:
         return self.__email
-
+    
     def receive_message(self, message):
         self.__inbox.append(message)
 
-    def list_messages(self):
+    def get_messages(self):
         return [msg.subjet for msg in self.__inbox]

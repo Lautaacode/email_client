@@ -1,6 +1,6 @@
 # Importaciones de bibliotecas y/o archivos
-from user.user import User
-from server_email.server_email import ServerEmail
+from user import User
+from server_email import ServerEmail
 
 # Creaccion de la clase main
 def main():
@@ -25,7 +25,7 @@ def main():
 
     # Lista mensajes de usuarios
     for user in users:
-        print(f"Mensajes de {user.name}:", user.list_messages())
+        print(f"Mensajes de {user.name}:", user.get_messages())
 
 
 if __name__ == "__main__":

@@ -1,5 +1,5 @@
 # Importaciones de bibliotecas y/o archivos
-from message.message import Message
+from message import Message
 
 
 # Creaccion de la clase servidor correo
