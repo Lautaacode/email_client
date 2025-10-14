@@ -1,7 +1,7 @@
 # --- Importaciones de bibliotecas y/o archivos ---
 from typing import Dict
 from models.message import Message
-from users.user import User
+from models.user import User
 
 
 

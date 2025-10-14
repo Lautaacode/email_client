@@ -1,4 +1,4 @@
-from server.mail_server import MailServer
+from models.mail_server import MailServer
 
 
 if __name__ == "__main__":

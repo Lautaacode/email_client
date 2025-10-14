@@ -5,9 +5,6 @@ from models.message import Message
 from models.folder import Folder
 
 
-
-
-
 # -------------------- Clase User implementando la interfaz --------------------
 class User(MailOperations):
     """
@@ -17,14 +14,11 @@ class User(MailOperations):
 
     def __init__(self, name: str):
         self._name = name
-        self._inbox = Folder("Inbox")
-        self._drafts = Folder("Drafts")
-        self._sent = Folder("Sent")
         self._root = Folder("Root")
-
+        self._inbox = Folder("Inbox")
+        self._sent = Folder("Sent")
         # Se construye la jerarquía de carpetas base
         self._root.add_subfolder(self._inbox)
-        self._root.add_subfolder(self._drafts)
         self._root.add_subfolder(self._sent)
 
     # --- Propiedades (encapsulamiento) ---
@@ -43,10 +37,6 @@ class User(MailOperations):
     @property
     def sent(self) -> Folder:
         return self._sent
-
-    @property
-    def drafts(self) -> Folder:
-        return self._drafts
 
     # --- Métodos de la interfaz ---
     def send_message(self, server, receiver: str, subject: str, body: str):
