@@ -4,7 +4,6 @@ from typing import List, Optional
 from models.message import Message
 
 
-
 # -------------------- Clase Folder --------------------
 class Folder:
     """
@@ -39,6 +38,8 @@ class Folder:
     def messages(self) -> List[Message]:
         return self._messages
 
+    # --- Métodos públicos ---
+
     # --- Estructura recursiva ---
     def add_subfolder(self, subfolder: Folder):
         """Agrega una subcarpeta a la carpeta actual."""
@@ -48,19 +49,6 @@ class Folder:
     def add_message(self, message: Message):
         """Agrega un mensaje a la carpeta actual."""
         self._messages.append(message)
-
-    # --- Mover mensajes entre carpetas ---
-    def move_message(self, message: Message, destination_folder: Folder):
-        """
-        Mueve un mensaje a otra carpeta. Si no se encuentra en esta carpeta,
-        la búsqueda continúa de forma recursiva en las subcarpetas.
-        """
-        if message in self._messages:
-            self._messages.remove(message)
-            destination_folder.add_message(message)
-        else:
-            for sub in self._subfolders:
-                sub.move_message(message, destination_folder)
 
     # --- Búsqueda recursiva ---
     def search_by_subject(self, text: str) -> List[Message]:

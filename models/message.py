@@ -16,7 +16,7 @@ class Message:
         self._body = body
         self._date = datetime.now()
 
-    # --- Propiedades (encapsulamiento) ---
+    # --- Propiedades encapsuladas ---
     @property
     def sender(self) -> str:
         """Remitente del mensaje."""

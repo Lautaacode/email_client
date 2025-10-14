@@ -21,7 +21,7 @@ class User(MailOperations):
         self._root.add_subfolder(self._inbox)
         self._root.add_subfolder(self._sent)
 
-    # --- Propiedades (encapsulamiento) ---
+    # --- Propiedades encapsuladas ---
     @property
     def name(self) -> str:
         return self._name
@@ -38,7 +38,7 @@ class User(MailOperations):
     def sent(self) -> Folder:
         return self._sent
 
-    # --- Métodos de la interfaz ---
+    # --- Métodos publicos ---
     def send_message(self, server, receiver: str, subject: str, body: str):
         """
         Envía un mensaje a otro usuario a través del servidor.

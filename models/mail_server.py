@@ -15,6 +15,11 @@ class MailServer:
     def __init__(self):
         self._users: Dict[str, User] = {}
 
+    # --- Propiedad para obtener todos los usuarios---
+    @property
+    def users(self) -> Dict[str, User]:
+        return self._users
+
     # --- Métodos públicos ---
     def register_user(self, name: str):
         """
@@ -23,7 +28,7 @@ class MailServer:
         if name not in self._users:
             self._users[name] = User(name)
         else:
-            print(f"⚠️ El usuario '{name}' ya está registrado.")
+            print(f"El usuario '{name}' ya está registrado.")
 
     def deliver_message(self, receiver: str, message: Message):
         """
@@ -33,7 +38,7 @@ class MailServer:
         if user:
             user.receive_message(message)
         else:
-            print(f"⚠️ El destinatario '{receiver}' no existe en el servidor.")
+            print(f"El destinatario '{receiver}' no existe en el servidor.")
 
     def show_structure(self):
         """
@@ -43,8 +48,3 @@ class MailServer:
             print(f" Usuario: {name}")
             user.root.show_tree()
             print("-" * 40)
-
-    # --- Propiedad para obtener todos los usuarios (solo lectura) ---
-    @property
-    def users(self) -> Dict[str, User]:
-        return self._users
