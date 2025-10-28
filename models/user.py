@@ -48,6 +48,32 @@ class User(MailOperations):
         self._sent.add_message(message)
         server.deliver_message(receiver, message)
 
+    def find_folder(self, name: str, folder=None):
+        """
+        Busca recursivamente una carpeta por nombre.
+        """
+        folder = folder or self._root
+        if folder.name == name:
+            return folder
+        for sub in folder.subfolders:
+            res = self._find_folder(name, sub)
+            if res:
+                return res
+        return None
+
+    def move_mail(self, subject: str, folder_name: str):
+        """
+        Mueve un mensaje desde cualquier carpeta a otra carpeta por nombre.
+        """
+        target = self._find_folder(folder_name)
+        if not target:
+            print("Carpeta destino no existe.")
+            return
+
+        found = self._root.move_message(subject, target)
+        if not found:
+            print("Mensaje no encontrado.")
+
     def receive_message(self, message: Message):
         """Recibe un mensaje y lo guarda en la bandeja de entrada."""
         self._inbox.add_message(message)

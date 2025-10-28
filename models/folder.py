@@ -68,7 +68,27 @@ class Folder:
             found.extend(sub.search_by_sender(sender))
         return found
 
+    def move_message(self, subject: str, target_folder: "Folder") -> bool:
+        """
+        Busca recursivamente un mensaje por asunto y lo mueve a otra carpeta.
+        Devuelve True si lo movió, False si no lo encontró.
+        """
+        # Buscar en la carpeta actual
+        for m in self._messages:
+            if m.subject == subject:
+                self._messages.remove(m)
+                target_folder.add_message(m)
+                return True
+
+        # Buscar en subcarpetas recursivamente
+        for sub in self._subfolders:
+            if sub.move_message(subject, target_folder):
+                return True
+
+        return False
+
     # --- Representación visual del árbol ---
+
     def show_tree(self, level: int = 0):
         """Muestra la estructura jerárquica de carpetas y cantidad de mensajes."""
         print("  " * level + f" {self._name} ({len(self._messages)} mensajes)")

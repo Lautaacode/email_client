@@ -4,7 +4,6 @@ from models.message import Message
 from models.user import User
 
 
-
 # -------------------- Clase MailServer --------------------
 class MailServer:
     """
