@@ -1,5 +1,5 @@
 import unittest
-from models.mail_server import MailServer
+from models.mail_server import MailServer , Message
 
 
 class TestMail(unittest.TestCase):
