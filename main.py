@@ -1,6 +1,7 @@
 from models.mail_server import MailServer
 
 
+
 if __name__ == "__main__":
     server = MailServer()
     server.register_user("alice")
@@ -13,6 +14,8 @@ if __name__ == "__main__":
     alice.send_message(server, "bob", "Reunión", "Mañana a las 10am")
 
     server.show_structure()
+
+
 
     # Buscar mensajes por asunto
     resultados = bob.root.search_by_subject("hola")
