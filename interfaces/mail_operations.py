@@ -7,8 +7,7 @@ from models.message import Message
 # -------------------- Interfaz --------------------
 class MailOperations(ABC):
     """
-    Interfaz que define las operaciones básicas de un cliente de correo electrónico.
-    Cualquier clase que la implemente deberá ser capaz de enviar, recibir y listar mensajes.
+    Interfaz que define las operaciones básicas de un cliente de correo.
     """
 
     # --- Métodos ---

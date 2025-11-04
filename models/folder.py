@@ -7,17 +7,17 @@ from models.message import Message
 # -------------------- Clase Folder --------------------
 class Folder:
     """
-    Representa una carpeta que puede contener subcarpetas y mensajes.
-    Forma parte de una estructura recursiva (árbol general).
+    Carpeta de correos que puede contener subcarpetas y mensajes.
+    Se modela como un árbol general (estructura recursiva).
     """
 
     def __init__(self, name: str, parent: Optional[Folder] = None):
-        self._name = name
-        self._parent = parent
-        self._subfolders: List[Folder] = []
-        self._messages: List[Message] = []
+        self._name = name # nombre de la carpeta
+        self._parent = parent # carpeta padre
+        self._subfolders: List[Folder] = [] # subcarpetas
+        self._messages: List[Message] = [] # mensajes en la carpeta
 
-    # --- Propiedades encapsuladas ---
+    # --- Propiedades ---
     @property
     def name(self) -> str:
         return self._name
@@ -38,59 +38,39 @@ class Folder:
     def messages(self) -> List[Message]:
         return self._messages
 
-    # --- Métodos públicos ---
-
-    # --- Estructura recursiva ---
+    # --- Métodos ---
     def add_subfolder(self, subfolder: Folder):
-        """Agrega una subcarpeta a la carpeta actual."""
         subfolder.parent = self
         self._subfolders.append(subfolder)
 
     def add_message(self, message: Message):
-        """Agrega un mensaje a la carpeta actual."""
         self._messages.append(message)
 
-    # --- Búsqueda recursiva ---
+    # --- Búsquedas recursivas ---
     def search_by_subject(self, text: str) -> List[Message]:
-        """
-        Busca mensajes por texto contenido en el asunto.
-        Complejidad temporal: O(n) siendo n la cantidad total de mensajes en el árbol.
-        """
         found = [m for m in self._messages if text.lower() in m.subject.lower()]
         for sub in self._subfolders:
             found.extend(sub.search_by_subject(text))
         return found
 
     def search_by_sender(self, sender: str) -> List[Message]:
-        """Busca mensajes por nombre del remitente (recursivo)."""
         found = [m for m in self._messages if m.sender == sender]
         for sub in self._subfolders:
             found.extend(sub.search_by_sender(sender))
         return found
 
     def move_message(self, subject: str, target_folder: "Folder") -> bool:
-        """
-        Busca recursivamente un mensaje por asunto y lo mueve a otra carpeta.
-        Devuelve True si lo movió, False si no lo encontró.
-        """
-        # Buscar en la carpeta actual
         for m in self._messages:
             if m.subject == subject:
                 self._messages.remove(m)
                 target_folder.add_message(m)
                 return True
-
-        # Buscar en subcarpetas recursivamente
         for sub in self._subfolders:
             if sub.move_message(subject, target_folder):
                 return True
-
         return False
 
-    # --- Representación visual del árbol ---
-
     def show_tree(self, level: int = 0):
-        """Muestra la estructura jerárquica de carpetas y cantidad de mensajes."""
-        print("  " * level + f" {self._name} ({len(self._messages)} mensajes)")
+        print("  " * level + f"📁 {self._name} ({len(self._messages)} mensajes)")
         for sub in self._subfolders:
             sub.show_tree(level + 1)
