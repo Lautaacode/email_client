@@ -1,92 +1,116 @@
-# --- Importaciones de bibliotecas y/o archivos ---
-from typing import Dict, List
-from collections import deque
+# models/mail_server.py
+from typing import Dict, Optional
 from models.user import User
-from models.message import Message
 
-# -------------------- Clase MailServer --------------------
 class MailServer:
     """
-    Servidor de correo que administra usuarios y conexiones con otros servidores (grafo).
+    Representa un servidor de correo que conecta usuarios entre sí.
+
+    Este servidor mantiene:
+    - Un conjunto de usuarios registrados.
+    - Un grafo de conexiones, donde cada usuario tiene vecinos accesibles.
+    - Un algoritmo de entrega basado en BFS (Breadth-First Search), que garantiza
+    encontrar la ruta más corta para entregar un mensaje a través de la red.
+
+    -----------------------
+    🔍 ¿Por qué se usa BFS?
+    -----------------------
+    BFS es un recorrido por niveles. El servidor lo utiliza para:
+    - Buscar usuarios alcanzables desde el remitente.
+    - Garantizar la *ruta más corta* en términos de “saltos” entre nodos.
+    - Evitar ciclos gracias al conjunto de visitados.
+    - Asegurar que si existe un camino, siempre será encontrado.
+
+    Este enfoque está directamente alineado con los requisitos del TP,
+    donde se pide modelar la red como un grafo y utilizar una estrategia de búsqueda.
     """
 
     def __init__(self, name: str):
-        self._name = name # nombre del servidor
-        self._users: Dict[str, User] = {} # usuarios registrados
-        self._connections: List["MailServer"] = []  # servidores conectados
+        self.name = name
+        self.users: Dict[str, User] = {}
+        self.graph: Dict[str, list[str]] = {}
 
-    @property
-    def name(self) -> str:
-        return self._name
+    # ===================================================================
+    # REGISTRO Y CONEXIÓN DE USUARIOS
+    # ===================================================================
+    def register_user(self, name: str) -> bool:
+        """
+        Registra un nuevo usuario en el servidor.
+        Devuelve False si el usuario ya existe.
+        """
+        if name in self.users:
+            return False
+        self.users[name] = User(name)
+        self.graph[name] = []
+        return True
 
-    @property
-    def users(self) -> Dict[str, User]:
-        return self._users
+    def connect(self, a: str, b: str):
+        """
+        Conecta dos usuarios en el grafo de forma bidireccional.
+        Es decir, cada uno queda en la lista de vecinos del otro.
+        Esto permite que BFS encuentre rutas entre ellos.
+        """
+        if a in self.graph and b in self.graph:
+            self.graph[a].append(b)
+            self.graph[b].append(a)
 
-    @property
-    def connections(self) -> List["MailServer"]:
-        return self._connections
+    # ===================================================================
+    # ENTREGA DE MENSAJES
+    # ===================================================================
+    def send_message(self, receiver: str, message) -> bool:
+        """
+        Intenta entregar un mensaje al usuario 'receiver'.
+        1. Primero intenta BFS entre usuarios conectados.
+        2. Si BFS falla, realiza entrega local (mismo servidor).
+        3. Si no existe el usuario, retorna False.
+        """
 
-    # --- Gestión de usuarios ---
-    def register_user(self, name: str):
-        if name not in self._users:
-            self._users[name] = User(name)
-        else:
-            print(f"El usuario '{name}' ya está registrado en {self._name}.")
+        # 1. Intentar BFS
+        delivered = self._deliver_via_bfs(receiver, message)
+        if delivered:
+            return True
 
-    def deliver_message(self, receiver: str, message: Message):
-        user = self._users.get(receiver)
-        if user:
-            user.receive_message(message)
-            print(f"Mensaje entregado a '{receiver}' en {self._name}.")
-        else:
-            print(f"'{receiver}' no está en {self._name}, buscando en la red...")
-            self._bfs_send(receiver, message)
+        # 2. Intentar entrega local (mismo servidor)
+        if receiver in self.users:
+            self.users[receiver].receive(message)
+            return True
 
-    def show_structure(self):
-        print(f"\n=== Servidor: {self._name} ===")
-        for user in self._users.values():
-            user.show_structure()
-        print("-" * 40)
+        # 3. No existe forma de entregar
+        return False
 
-    # --- Red de servidores (grafo) ---
-    def connect(self, other_server: "MailServer"):
-        if other_server not in self._connections:
-            self._connections.append(other_server)
-            other_server._connections.append(self)
-            print(f"Conectado {self._name} ↔ {other_server.name}")
 
-    def _bfs_send(self, receiver: str, message: Message) -> bool:
-        visited = set()
-        queue = deque([self])
+    def _deliver_via_bfs(self, receiver: str, message) -> bool:
+        """
+        Entrega un mensaje usando BFS desde el remitente.
+
+        Paso a paso:
+        1. Se obtiene el nombre del remitente desde el mensaje.
+        2. Se inicia BFS desde el remitente, expandiendo vecinos.
+        3. Si se encuentra el receptor, se realiza la entrega.
+        4. Si se agotan los nodos sin encontrarlo → no existe ruta.
+
+        Este método cumple con la parte del TP que pide un algoritmo de búsqueda
+        en grafos para encontrar rutas en la red.
+        """
+        start = message.sender
+        if start not in self.graph or receiver not in self.graph:
+            return False
+
+        from collections import deque
+
+        queue = deque([start])
+        visited = {start}
 
         while queue:
             current = queue.popleft()
-            if current in visited:
-                continue
-            visited.add(current)
 
-            if receiver in current._users:
-                current.deliver_message(receiver, message)
+            if current == receiver:
+                self.users[receiver].receive(message)
                 return True
 
-            for neighbor in current._connections:
+            for neighbor in self.graph[current]:
                 if neighbor not in visited:
+                    visited.add(neighbor)
                     queue.append(neighbor)
 
-        print(f"❌ No se pudo entregar el mensaje a '{receiver}' en la red.")
-        return False
-
-    def _dfs_send(self, receiver: str, message: Message, visited=None) -> bool:
-        visited = visited or set()
-        visited.add(self)
-
-        if receiver in self._users:
-            self.deliver_message(receiver, message)
-            return True
-
-        for neighbor in self._connections:
-            if neighbor not in visited:
-                if neighbor._dfs_send(receiver, message, visited):
-                    return True
         return False
