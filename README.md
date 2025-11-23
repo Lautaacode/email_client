@@ -38,7 +38,7 @@ recursivas, filtros automáticos y una red distribuida de servidores.
 - Entregar mensajes en una red modelada como grafo usando BFS
 
 ---
-##  Instrucciones de Uso
+## 📖 Instrucciones de Uso
 
 1.  **Requisitos del Sistema**
 
