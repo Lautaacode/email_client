@@ -1,7 +1,7 @@
 
 # 📧 Cliente de Correo Electrónico (Email Client)
 
-### Trabajo Final para la Cátedra: *Estructuras de Datos*  
+## ℹ️ Trabajo Final para la Cátedra: *Estructuras de Datos*  
 **Universidad Nacional Almirante Brown (UNaB)**  
 **Profesor:** Dr. Diego Agustín Ambrossio
 
